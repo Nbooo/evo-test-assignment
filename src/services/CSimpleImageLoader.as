@@ -18,12 +18,12 @@ public class CSimpleImageLoader extends Actor implements IImageLoadService{
         while (url){
             var l:CImageLoader = new CImageLoader(url);
             l.complete.addOnce(onLoadComplete);
-            l.error.addOnce(onLoadError)
-            mLoaders.push(l)
+            l.error.addOnce(onLoadError);
+            mLoaders.push(l);
             url = resource.next;
         }
 
-        mLoaders.forEach(function(l, i:int, v:Vector.<CImageLoader>):void {
+        mLoaders.forEach(function(l:CImageLoader, i:int, v:Vector.<CImageLoader>):void {
             l.load();
         });
     }
@@ -62,7 +62,7 @@ internal class CImageLoader {
 
     public function CImageLoader(url:String){
         mLoader = new Loader();
-        mRequest = new URLRequest(url)
+        mRequest = new URLRequest(url);
         mSignalComplete = new Signal();
         mSignalError = new Signal();
     }
@@ -73,10 +73,6 @@ internal class CImageLoader {
 
     public function get error():Signal {
         return mSignalError;
-    }
-
-    public function get url():String {
-        return mRequest.url;
     }
 
     public function load():void {

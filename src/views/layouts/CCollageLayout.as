@@ -11,9 +11,9 @@ public class CCollageLayout implements ILayoutBuilder {
     public function arrange(images:Vector.<DisplayObject>, bounds:Rectangle, imageSpacing:int = 1):void {
         mImageSpacing = imageSpacing;
         var S:Number = bounds.width * bounds.height;
-        var population:Vector.<Individe> = new Vector.<Individe>();
-        var numberOfIndivides:int = 50;
-        for (var i:int = 0; i < numberOfIndivides; i++){
+        var candidates:Vector.<Layout> = new Vector.<Layout>();
+        var numLayouts:int = 50;
+        for (var i:int = 0; i < numLayouts; i++){
             var root:Node = Node.container(Node.V);
             var internalNodes:Vector.<Node> = new Vector.<Node>();
             var leafs:Vector.<Node> = new Vector.<Node>();
@@ -21,12 +21,12 @@ public class CCollageLayout implements ILayoutBuilder {
             createTree(root, internalNodes, images.length - 1);
             fillLeafs(internalNodes, leafs, images);
             makeLayout(root, bounds.width, bounds.height);
-            population.push(Individe.create(root, computeCost(leafs, S)))
+            candidates.push(Layout.create(root, computeCost(leafs, S)))
         }
-        population.sort(sortByCost);
-        var best:Individe = population.shift();
-        scaleAndPositionLeafs(best.root, (bounds.width - best.root.width)/2,(bounds.height - best.root.height)/2)
-        population.length = 0;
+        candidates.sort(sortByCost);
+        var best:Layout = candidates.shift();
+        scaleAndPositionLeafs(best.root, (bounds.width - best.root.width)/2,(bounds.height - best.root.height)/2);
+        candidates.length = 0;
     }
 
     private function makeLayout(root:Node, width:Number, height:Number):void {
@@ -115,8 +115,7 @@ public class CCollageLayout implements ILayoutBuilder {
     private function computeCost(leafs:Vector.<Node>, S:Number):Number {
         var summ:Number = 0;
         for each (var leaf:Node in leafs){
-            var s:Number = (leaf.width * leaf.height)/S;
-            summ += s;
+            summ += (leaf.width * leaf.height)/S;
         }
         return 1 - summ;
     }
@@ -130,7 +129,7 @@ public class CCollageLayout implements ILayoutBuilder {
         return !(item.left && item.right);
     }
 
-    private function sortByCost(a:Individe , b:Individe):int{
+    private function sortByCost(a:Layout , b:Layout):int{
         if (a.cost > b.cost)
             return 1;
         if (a.cost < b.cost)
@@ -142,17 +141,17 @@ public class CCollageLayout implements ILayoutBuilder {
 
 import flash.display.DisplayObject;
 
-internal class Individe {
+internal class Layout {
     private var mRoot:Node;
     private var mCost:Number;
-    public static function create(root:Node, cost:Number):Individe {
-        var i:Individe = new Individe();
+    public static function create(root:Node, cost:Number):Layout {
+        var i:Layout = new Layout();
         i.mRoot = root;
         i.mCost = cost;
         return i;
     }
 
-    public function Individe():void { }
+    public function Layout():void { }
     public function get cost():Number {return mCost;}
     public function get root():Node {return mRoot;}
 }
@@ -178,7 +177,7 @@ internal class Node {
 
     public static function randomContainer():Node {
         var n:Node = new Node();
-        n.mLabel = Math.random() > .5 ? Node.H : Node.V
+        n.mLabel = Math.random() > .5 ? Node.H : Node.V;
         return n;
     }
 
@@ -216,9 +215,9 @@ internal class Node {
     public function get right():Node { return mRight; }
     public function set ratio(v:Number):void{ mAspectRatio = v; }
     public function get ratio():Number {return mAspectRatio; }
-    public function set width(v:Number) { mWidth = v; }
+    public function set width(v:Number):void { mWidth = v; }
     public function get width():Number { return mWidth; }
-    public function set height(v:Number) { mHeight = v; }
+    public function set height(v:Number):void { mHeight = v; }
     public function get height():Number { return mHeight; }
 
 
